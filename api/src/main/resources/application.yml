@@ -1,0 +1,52 @@
+﻿spring:
+  application:
+    name: scm-ops-api
+  profiles:
+    active: 
+  datasource:
+    url: jdbc:postgresql://:5432/
+    username: 
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scmdev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stage
+  datasource:
+    url: jdbc:postgresql://:5432/scmstage
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://:5432/scmprod
