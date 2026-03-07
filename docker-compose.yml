@@ -1,55 +1,56 @@
-﻿version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: scm-postgres
+  db:
+    image: postgres:16-alpine
+    container_name: scm_db_dev
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: scmdev
+      POSTGRES_DB: scmdb
+      POSTGRES_USER: scmuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db/migrations:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U scmuser -d scmdb"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   api:
-    build: ./api
-    container_name: scm-api
-    ports:
-      - "8080:8080"
+    image: scm-api:0.1.0
+    container_name: scm_api_dev
     environment:
-      ENV: dev
-      DB_HOST: postgres
-      DB_NAME: scmdev
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://scmuser:${DB_PASSWORD}@db:5432/scmdb
+      APP_VERSION: ${APP_VERSION:-0.1.0}
+    ports:
+      - "3000:3000"
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
-    volumes:
-      - ./api:/app
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   web:
-    build: ./web
-    container_name: scm-web
+    image: scm-web:0.1.0
+    container_name: scm_web_dev
     ports:
       - "80:80"
-    environment:
-      VITE_API_URL: http://localhost:8080
     depends_on:
-      api:
+      - api
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: scm_flyway
+    command: >
+      -url=jdbc:postgresql://db:5432/scmdb
+      -user=scmuser
+      -password=${DB_PASSWORD}
+      migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    depends_on:
+      db:
         condition: service_healthy
 
 volumes:

@@ -1,12 +1,25 @@
-﻿FROM maven:3.8.4-openjdk-17-slim AS builder
+# Build stage
+FROM node:20-alpine AS builder
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
-COPY src ./src
-RUN mvn clean package -DskipTests
+COPY package*.json ./
+RUN npm ci --only=production
 
-FROM openjdk:17-slim
+# Production stage
+FROM node:20-alpine AS production
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY --from=builder /app/node_modules ./node_modules
+COPY src/ ./src/
+COPY package.json ./
+
+ARG APP_VERSION=0.0.0
+ARG BUILD_DATE
+ARG GIT_COMMIT
+ENV APP_VERSION=$APP_VERSION
+
+LABEL org.opencontainers.image.version=$APP_VERSION \
+      org.opencontainers.image.created=$BUILD_DATE \
+      org.opencontainers.image.revision=$GIT_COMMIT
+
+EXPOSE 3000
+USER node
+CMD ["node", "src/index.js"]

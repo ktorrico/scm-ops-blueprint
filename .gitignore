@@ -1,56 +1,26 @@
-﻿# Java
-api/target/
-api/*.log
-api/*.jar
-api/*.war
-api/.mvn/
-api/mvnw
-api/mvnw.cmd
+# Secretos - NUNCA al repo
+.env
+.env.local
+.env.*.local
 
-# Node
-web/node_modules/
-web/dist/
-web/build/
-web/*.log
-web/.env
-web/.env.local
-web/.env.*.local
+# Dependencies
+node_modules/
+**/node_modules/
 
-# IDE
-.idea/
-*.iml
-.vscode/
-.classpath
-.project
-.settings/
-.springBeans
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Docker
-*.pid
-docker-compose.override.yml
-
-# Secrets
-**/secrets/
-**/.secrets/
-*.pem
-*.key
-*.crt
+# Build outputs
+**/build/
+**/dist/
 
 # Logs
 *.log
-logs/
+npm-debug.log*
 
-# Testing
-test-results/
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+postgres_data/
+
+# Coverage
 coverage/
-
-# Evidence (pero mantener la carpeta)
-evidence/*
-!evidence/.gitkeep
-
-# Keep directories empty
-**/*/.gitkeep
