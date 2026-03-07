@@ -1,29 +1,22 @@
-## Descripción del Cambio
-<!-- Describe brevemente los cambios realizados y por qué son necesarios. -->
+## 📋 Descripción
+<!-- ¿Qué hace este PR? -->
 
-## Ticket / Issue Relacionado
-<!-- Ej: "Closes #123" o "Relacionado con el ticket ABC-456 en el tablero" -->
+## 🔗 Ticket relacionado
+Closes #
 
-## Tipo de Cambio
-- [ ] Bugfix (corrección de un error)
-- [ ] Nueva funcionalidad (feature)
-- [ ] Cambio de configuración o refactorización
-- [ ] Documentación
-- [ ] Este cambio requiere una actualización en la documentación
+## 🧪 Tipo de cambio
+- [ ] Feature nueva
+- [ ] Bug fix
+- [ ] Refactor
+- [ ] Config / CI
+- [ ] Docs
 
-## Checklist (Requisitos del Proyecto SCM)
-- [ ] Mi código sigue los estándares del proyecto (linting, formato).
-- [ ] He ejecutado las pruebas (tests) localmente y todo pasa.
-- [ ] He probado el cambio en mi entorno local/desarrollo.
-- [ ] Las migraciones de base de datos (Flyway/Liquibase) están versionadas y funcionan.
-- [ ] Los secretos/contraseñas no están hardcodeados en el código.
-- [ ] La configuración específica del entorno se maneja correctamente (vars de entorno).
+## ✅ Checklist
+- [ ] Tests pasan localmente (`npm test`)
+- [ ] Lint pasa (`npm run lint`)
+- [ ] No hay secretos en el código
+- [ ] Docker build exitoso
+- [ ] Documentación actualizada si aplica
 
-## Evidencia para Auditoría (Obligatorio para el proyecto)
-<!-- Añade capturas de pantalla, logs o enlaces que demuestren que el cambio funciona.
-     Esto es crucial para la nota final. -->
-- [ ] Adjunto/Link a captura de la funcionalidad funcionando.
-- [ ] Adjunto/Link a logs de éxito (si aplica).
-
-## @Menciones
-<!-- Ej: @revisor-principal para que revise -->
+## 📸 Evidencia
+<!-- Screenshots o logs relevantes -->
