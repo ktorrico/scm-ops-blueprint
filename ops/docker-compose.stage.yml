@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scmdb_stage
+      POSTGRES_USER: scmuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_stage:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scmuser"]
+      interval: 10s
+      retries: 5
+
+  api:
+    image: ghcr.io/${IMAGE_OWNER}/scm-api:${APP_VERSION}
+    environment:
+      NODE_ENV: staging
+      PORT: 3000
+      DATABASE_URL: postgresql://scmuser:${DB_PASSWORD}@db:5432/scmdb_stage
+      APP_VERSION: ${APP_VERSION}
+      FEATURE_NEW_ITEMS_UI: ${FEATURE_NEW_ITEMS_UI:-false}
+      FEATURE_MAINTENANCE: ${FEATURE_MAINTENANCE:-false}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: ghcr.io/${IMAGE_OWNER}/scm-web:${APP_VERSION}
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    command: >
+      -url=jdbc:postgresql://db:5432/scmdb_stage
+      -user=scmuser
+      -password=${DB_PASSWORD}
+      migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_stage:
