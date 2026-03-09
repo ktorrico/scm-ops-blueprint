@@ -25,8 +25,14 @@ jobs:
           echo "Date: $(date -u)"
           echo "========================================="
 
-      - name: Simulate health check
+      - name: Simulate stage health check
         run: |
           echo "Stage health check passed"
           echo "VERSION=${{ steps.ver.outputs.VERSION }}"
           echo "STATUS=healthy"
+
+      - name: Log promotion ready
+        run: |
+          echo "Artifact ready for promotion to prod:"
+          echo "ghcr.io/${{ github.repository_owner }}/scm-api:${{ steps.ver.outputs.VERSION }}"
+          echo "ghcr.io/${{ github.repository_owner }}/scm-web:${{ steps.ver.outputs.VERSION }}"

@@ -25,3 +25,4 @@ postgres_data/
 # Coverage
 coverage/
 web/build/
+web/build/
