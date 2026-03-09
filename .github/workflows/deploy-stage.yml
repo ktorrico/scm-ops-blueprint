@@ -1,0 +1,38 @@
+name: Deploy to Stage
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-stage:
+    name: Deploy to Stage
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: ver
+        run: echo "VERSION=sha-${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+      - name: Log deployment
+        run: |
+          echo "========================================="
+          echo "Deploying version ${{ steps.ver.outputs.VERSION }} to STAGE"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Date: $(date -u)"
+          echo "========================================="
+
+      - name: Simulate stage health check
+        run: |
+          echo "Stage health check passed"
+          echo "VERSION=${{ steps.ver.outputs.VERSION }}"
+          echo "STATUS=healthy"
+
+      - name: Log promotion ready
+        run: |
+          echo "Artifact ready for promotion to prod:"
+          echo "ghcr.io/${{ github.repository_owner }}/scm-api:${{ steps.ver.outputs.VERSION }}"
+          echo "ghcr.io/${{ github.repository_owner }}/scm-web:${{ steps.ver.outputs.VERSION }}"
