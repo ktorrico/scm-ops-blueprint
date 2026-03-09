@@ -1,0 +1,53 @@
+name: Promote to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to promote (e.g. 0.2.0)'
+        required: true
+      confirm:
+        description: 'Type PROMOTE to confirm'
+        required: true
+
+jobs:
+  promote:
+    name: Promote ${{ github.event.inputs.version }} to PROD
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "PROMOTE" ]; then
+            echo "Confirmation failed. You must type PROMOTE"
+            exit 1
+          fi
+          echo "Confirmation accepted"
+
+      - name: Show artifact being promoted
+        run: |
+          echo "========================================="
+          echo "PROMOTING TO PRODUCTION"
+          echo "Version: ${{ github.event.inputs.version }}"
+          echo "Image API: ghcr.io/${{ github.repository_owner }}/scm-api:${{ github.event.inputs.version }}"
+          echo "Image Web: ghcr.io/${{ github.repository_owner }}/scm-web:${{ github.event.inputs.version }}"
+          echo "Promoted by: ${{ github.actor }}"
+          echo "Date: $(date -u)"
+          echo "========================================="
+          echo "SAME artifact from stage - NOT rebuilt"
+
+      - name: Simulate production deploy
+        run: |
+          echo "Deploying to production..."
+          echo "Running DB migrations..."
+          echo "Health check..."
+          echo "Production deploy successful"
+
+      - name: Record promotion evidence
+        run: |
+          echo "PROMOTED_VERSION=${{ github.event.inputs.version }}" 
+          echo "DATE=$(date -u)"
+          echo "PROMOTED_BY=${{ github.actor }}"
+          echo "ARTIFACT=ghcr.io/${{ github.repository_owner }}/scm-api:${{ github.event.inputs.version }}"
