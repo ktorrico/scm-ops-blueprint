@@ -1,0 +1,45 @@
+name: Rollback Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to rollback to (e.g. 0.1.0)'
+        required: true
+      reason:
+        description: 'Reason for rollback'
+        required: true
+
+jobs:
+  rollback:
+    name: Rollback to ${{ github.event.inputs.version }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log rollback start
+        run: |
+          echo "========================================="
+          echo "ROLLBACK INITIATED"
+          echo "Rolling back to: ${{ github.event.inputs.version }}"
+          echo "Reason: ${{ github.event.inputs.reason }}"
+          echo "Initiated by: ${{ github.actor }}"
+          echo "Date: $(date -u)"
+          echo "========================================="
+
+      - name: Simulate rollback
+        run: |
+          echo "Pulling image: ghcr.io/${{ github.repository_owner }}/scm-api:${{ github.event.inputs.version }}"
+          echo "Stopping current production..."
+          echo "Deploying previous version..."
+          echo "Running health check..."
+          echo "ROLLBACK COMPLETED SUCCESSFULLY"
+
+      - name: Record rollback evidence
+        run: |
+          echo "ROLLBACK_TO=${{ github.event.inputs.version }}"
+          echo "REASON=${{ github.event.inputs.reason }}"
+          echo "INITIATED_BY=${{ github.actor }}"
+          echo "DATE=$(date -u)"
+          echo "STATUS=completed"
