@@ -31,3 +31,12 @@ describe('Status endpoint', () => {
     expect(res.body.uptime_seconds).toBeDefined();
   });
 });
+
+describe('Ping endpoint', () => {
+  test('GET /ping returns pong', async () => {
+    const res = await request(app).get('/ping');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe('pong');
+    expect(res.body.timestamp).toBeDefined();
+  });
+});
