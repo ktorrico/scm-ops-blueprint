@@ -106,3 +106,12 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 module.exports = { app, server };
+
+// Ping endpoint - Issue #9
+app.get('/ping', (req, res) => {
+  res.json({
+    message: 'pong',
+    timestamp: new Date().toISOString(),
+    version: process.env.APP_VERSION || '0.0.0'
+  });
+});
