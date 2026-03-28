@@ -10,3 +10,11 @@ describe('Health endpoint', () => {
     expect(res.body.status).toBe('ok');
   });
 });
+
+describe('Version endpoint', () => {
+  test('GET /version returns 200', async () => {
+    const res = await request(app).get('/version');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.version).toBeDefined();
+  });
+});
