@@ -83,3 +83,13 @@ const server = app.listen(port, () => {
 });
 
 module.exports = { app, server };
+
+// Version endpoint - Issue #5
+app.get('/version', (req, res) => {
+  res.json({
+    version: process.env.APP_VERSION || '0.0.0',
+    env: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+    commit: process.env.GIT_COMMIT || 'local'
+  });
+});
