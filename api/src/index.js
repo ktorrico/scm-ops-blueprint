@@ -5,7 +5,6 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Logger estructurado
 const log = (level, message, meta = {}) => {
   console.log(JSON.stringify({
     timestamp: new Date().toISOString(),
@@ -17,7 +16,6 @@ const log = (level, message, meta = {}) => {
   }));
 };
 
-// Middleware de request logging
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -31,7 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health endpoint
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -41,7 +38,29 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Metrics endpoint
+app.get('/version', (req, res) => {
+  res.json({
+    version: process.env.APP_VERSION || '0.0.0',
+    env: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+    commit: process.env.GIT_COMMIT || 'local'
+  });
+});
+
+app.get('/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    version: process.env.APP_VERSION || '0.0.0',
+    env: process.env.NODE_ENV || 'development',
+    uptime_seconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    features: {
+      newItemsUI: process.env.FEATURE_NEW_ITEMS_UI === 'true',
+      maintenance: process.env.FEATURE_MAINTENANCE === 'true'
+    }
+  });
+});
+
 let requestCount = 0;
 let errorCount = 0;
 
@@ -60,7 +79,6 @@ app.get('/metrics', (req, res) => {
   });
 });
 
-// Items endpoint con feature flag
 app.get('/api/items', (req, res) => {
   const maintenanceMode = process.env.FEATURE_MAINTENANCE === 'true';
   const newUI = process.env.FEATURE_NEW_ITEMS_UI === 'true';
@@ -78,18 +96,13 @@ app.get('/api/items', (req, res) => {
   });
 });
 
-const server = app.listen(port, () => {
-  log('info', 'Server started', { port });
-});
+let server;
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(port, () => {
+    log('info', 'Server started', { port });
+  });
+} else {
+  server = app.listen(0);
+}
 
 module.exports = { app, server };
-
-// Version endpoint - Issue #5
-app.get('/version', (req, res) => {
-  res.json({
-    version: process.env.APP_VERSION || '0.0.0',
-    env: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString(),
-    commit: process.env.GIT_COMMIT || 'local'
-  });
-});

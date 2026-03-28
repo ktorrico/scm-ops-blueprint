@@ -1,9 +1,12 @@
+process.env.NODE_ENV = 'test';
+process.env.PORT = '3001';
+
 const { app, server } = require('../src/index');
 const request = require('supertest');
 
-describe('Health endpoint', () => {
-  afterAll(() => server.close());
+afterAll(() => server.close());
 
+describe('Health endpoint', () => {
   test('GET /health returns 200', async () => {
     const res = await request(app).get('/health');
     expect(res.statusCode).toBe(200);
@@ -16,5 +19,15 @@ describe('Version endpoint', () => {
     const res = await request(app).get('/version');
     expect(res.statusCode).toBe(200);
     expect(res.body.version).toBeDefined();
+  });
+});
+
+describe('Status endpoint', () => {
+  test('GET /status returns 200', async () => {
+    const res = await request(app).get('/status');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.version).toBeDefined();
+    expect(res.body.uptime_seconds).toBeDefined();
   });
 });
